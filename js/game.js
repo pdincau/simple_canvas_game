@@ -19,7 +19,7 @@ var heroImage = new Image();
 heroImage.onload = function () {
 	heroReady = true;
 };
-heroImage.src = "images/hero.png";
+heroImage.src = "images/hero_front.png";
 
 // Monster image
 var monsterReady = false;
@@ -60,10 +60,12 @@ var reset = function () {
 // Update game objects
 var update = function (modifier) {
 	if (38 in keysDown) { // Player holding up
+		heroImage.src = "images/hero_back.png";
 		hero.y = (hero.y > 32) ? (hero.y - hero.speed * modifier) : hero.y;
 	}
 
 	if (40 in keysDown) { // Player holding down
+		heroImage.src = "images/hero_front.png";
 		hero.y = (hero.y < canvas.height - 64) ? (hero.y + hero.speed * modifier) % canvas.height : hero.y;
 	}
 

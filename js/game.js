@@ -29,11 +29,33 @@ monsterImage.onload = function () {
 };
 monsterImage.src = "images/monster.png";
 
+// Rock image
+var rockReady = false;
+var rockImage = new Image();
+rockImage.onload = function () {
+	rockReady = true;
+};
+rockImage.src = "images/rock.png";
+
+// Plant image
+var plantReady = false;
+var plantImage = new Image();
+plantImage.onload = function () {
+	plantReady = true;
+};
+plantImage.src = "images/tree.png";
+
+
 // Game objects
 var hero = {
 	speed: 256 // movement in pixels per second
 };
 var monster = {};
+
+var rock = {};
+
+var plant = {};
+
 var monstersCaught = 0;
 
 // Handle keyboard controls
@@ -53,8 +75,16 @@ var reset = function () {
 	hero.y = canvas.height / 2;
 
 	// Throw the monster somewhere on the screen randomly
-	monster.x = 32 + (Math.random() * (canvas.width - 64));
-	monster.y = 32 + (Math.random() * (canvas.height - 64));
+	monster.x = 32 + (Math.random() * (canvas.width - 96));  //it was - 64
+	monster.y = 32 + (Math.random() * (canvas.height - 96)); //it was - 64
+
+	// Throw the rock somewhere on the screen randomly
+	rock.x = 32 + (Math.random() * (canvas.width - 96));
+	rock.y = 32 + (Math.random() * (canvas.height - 96));
+
+        // Throw the plant somewhere on the screen randomly
+	plant.x = 32 + (Math.random() * (canvas.width - 96));
+	plant.y = 32 + (Math.random() * (canvas.height - 96));
 };
 
 // Update game objects
@@ -101,6 +131,14 @@ var render = function () {
 
 	if (monsterReady) {
 		ctx.drawImage(monsterImage, monster.x, monster.y);
+	}
+
+	if (rockReady) {
+		ctx.drawImage(rockImage, rock.x, rock.y);
+	}
+
+        if (plantReady) {
+		ctx.drawImage(plantImage, plant.x, plant.y);
 	}
 
 	// Score

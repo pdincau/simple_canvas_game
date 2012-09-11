@@ -100,10 +100,12 @@ var update = function (modifier) {
 	}
 
 	if (37 in keysDown) { // Player holding left
+		heroImage.src = "images/hero_left.png";
 		hero.x = (hero.x > 32) ? (hero.x - hero.speed * modifier) : hero.x;
 	}
 
 	if (39 in keysDown) { // Player holding right
+		heroImage.src = "images/hero_right.png";
 		hero.x = (hero.x < canvas.width - 64) ? (hero.x + hero.speed * modifier) % canvas.width : hero.x;
 	}
 

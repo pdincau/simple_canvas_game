@@ -27,7 +27,7 @@ var monsterImage = new Image();
 monsterImage.onload = function () {
 	monsterReady = true;
 };
-monsterImage.src = "images/monster.png";
+monsterImage.src = "images/monster_front.png";
 
 // Rock image
 var rockReady = false;
@@ -50,7 +50,9 @@ plantImage.src = "images/tree.png";
 var hero = {
 	speed: 256 // movement in pixels per second
 };
-var monster = {};
+var monster = {
+        speed: 120
+};
 
 var rock = {};
 
@@ -107,6 +109,20 @@ var update = function (modifier) {
 	if (39 in keysDown) { // Player holding right
 		heroImage.src = "images/hero_right.png";
 		hero.x = (hero.x < canvas.width - 64) ? (hero.x + hero.speed * modifier) % canvas.width : hero.x;
+	}
+
+	if (monster.y > hero.y) {
+		monsterImage.src = "images/monster_back.png";
+		monster.y = monster.y - monster.speed * modifier;
+	} else {
+		monsterImage.src = "images/monster_front.png";
+		monster.y = monster.y + monster.speed * modifier;
+	}
+
+	if (monster.x > hero.x) {
+		monster.x = monster.x - monster.speed * modifier;
+	} else {
+		monster.x = monster.x + monster.speed * modifier;
 	}
 
 	// Are they touching?

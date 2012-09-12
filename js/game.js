@@ -45,20 +45,31 @@ plantImage.onload = function () {
 };
 plantImage.src = "images/tree.png";
 
+// Heart image
+var heartReady = false;
+var heartImage = new Image();
+heartImage.onload = function () {
+	heartReady = true;
+};
+heartImage.src = "images/heart.png";
 
 // Game objects
 var hero = {
-	speed: 256 // movement in pixels per second
+	speed: 180 // movement in pixels per second
 };
+
 var monster = {
-        speed: 120
+        speed: 90
 };
 
 var rock = {};
 
 var plant = {};
 
+//var hearts = {};
+
 var monstersCaught = 0;
+var heartsNumber = 3;
 
 // Handle keyboard controls
 var keysDown = {};
@@ -91,49 +102,65 @@ var reset = function () {
 
 // Update game objects
 var update = function (modifier) {
-	if (38 in keysDown) { // Player holding up
-		heroImage.src = "images/hero_back.png";
-		hero.y = (hero.y > 32) ? (hero.y - hero.speed * modifier) : hero.y;
-	}
+	if(heartsNumber > 0) {
+		if (38 in keysDown) { // Player holding up
+			heroImage.src = "images/hero_back.png";
+			hero.y = ((hero.y > 32) && is_free_space(hero.x, hero.y - hero.speed * modifier)) ? (hero.y - hero.speed * modifier) : hero.y;
+		}
 
-	if (40 in keysDown) { // Player holding down
-		heroImage.src = "images/hero_front.png";
-		hero.y = (hero.y < canvas.height - 64) ? (hero.y + hero.speed * modifier) % canvas.height : hero.y;
-	}
+		if (40 in keysDown) { // Player holding down
+			heroImage.src = "images/hero_front.png";
+			hero.y = ((hero.y < canvas.height - 64) && is_free_space(hero.x, hero.y + hero.speed * modifier)) ? (hero.y + hero.speed * modifier) % canvas.height : hero.y;
+		}
 
-	if (37 in keysDown) { // Player holding left
-		heroImage.src = "images/hero_left.png";
-		hero.x = (hero.x > 32) ? (hero.x - hero.speed * modifier) : hero.x;
-	}
+		if (37 in keysDown) { // Player holding left
+			heroImage.src = "images/hero_left.png";
+			hero.x = ((hero.x > 32) && is_free_space(hero.x - hero.speed * modifier, hero.y)) ? (hero.x - hero.speed * modifier) : hero.x;
+		}
 
-	if (39 in keysDown) { // Player holding right
-		heroImage.src = "images/hero_right.png";
-		hero.x = (hero.x < canvas.width - 64) ? (hero.x + hero.speed * modifier) % canvas.width : hero.x;
-	}
+		if (39 in keysDown) { // Player holding right
+			heroImage.src = "images/hero_right.png";
+			hero.x = ((hero.x < canvas.width - 64) && is_free_space(hero.x + hero.speed * modifier, hero.y)) ? (hero.x + hero.speed * modifier) % canvas.width : hero.x;
+		}
 
-	if (monster.y > hero.y) {
-		monsterImage.src = "images/monster_back.png";
-		monster.y = monster.y - monster.speed * modifier;
-	} else {
-		monsterImage.src = "images/monster_front.png";
-		monster.y = monster.y + monster.speed * modifier;
-	}
+		if (monster.y > hero.y) {
+			monsterImage.src = "images/monster_back.png";
+			monster.y = monster.y - monster.speed * modifier;
+		} else {
+			monsterImage.src = "images/monster_front.png";
+			monster.y = monster.y + monster.speed * modifier;
+		}
 
-	if (monster.x > hero.x) {
-		monster.x = monster.x - monster.speed * modifier;
-	} else {
-		monster.x = monster.x + monster.speed * modifier;
-	}
+		if (monster.x > hero.x) {
+			monster.x = monster.x - monster.speed * modifier;
+		} else {
+			monster.x = monster.x + monster.speed * modifier;
+		}
 
-	// Are they touching?
+		// Are they touching?
+		if (
+			hero.x <= (monster.x + 32)
+			&& monster.x <= (hero.x + 32)
+			&& hero.y <= (monster.y + 32)
+			&& monster.y <= (hero.y + 32)
+		) {
+	                heartsNumber--;
+			++monstersCaught;
+			reset();
+		}
+	} 
+};
+
+var is_free_space = function(x, y) {
 	if (
-		hero.x <= (monster.x + 32)
-		&& monster.x <= (hero.x + 32)
-		&& hero.y <= (monster.y + 32)
-		&& monster.y <= (hero.y + 32)
+		x <= (plant.x + 32)
+		&& plant.x <= (x + 32)
+		&& y <= (plant.y + 32)
+		&& plant.y <= (y + 32)
 	) {
-		++monstersCaught;
-		reset();
+		return false;
+	} else {
+		return true;
 	}
 };
 
@@ -159,12 +186,24 @@ var render = function () {
 		ctx.drawImage(plantImage, plant.x, plant.y);
 	}
 
+        if (heartReady) {
+                for(i = 0; i < heartsNumber; i++) {
+			ctx.drawImage(heartImage, 274 + (i * 64), 0);
+		}
+	}
+
 	// Score
 	ctx.fillStyle = "rgb(250, 250, 250)";
 	ctx.font = "24px Helvetica";
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
 	ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
+	
+	if (heartsNumber == 0) {
+		ctx.font = "40px Helvetica";
+		ctx.fillText("Game Over", 256, 240);
+	}
+
 };
 
 // The main game loop
